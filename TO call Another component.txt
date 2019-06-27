@@ -1,0 +1,42 @@
+Controller---------
+ h.injectfilter_helper(c,e,h,'LeadFilter_filter');
+
+Helper------------
+
+ injectfilter_helper:function(c,e,h,componentName){
+        try{
+            $A.createComponent('c:'+componentName, {
+                'objectName': 'Lead'
+            }, function (contentComponent, status, error) {
+                if (status === "SUCCESS") {
+                    c.set('v.filterBody', contentComponent);
+                    setTimeout(function(){  c.set('v.spinner',false); }, 1000);
+                    
+                } else {
+                    throw new Error(error);
+                }
+            });
+        }catch(ex){
+            console.log('Error');
+            console.log(ex);
+        } 
+    }
+
+
+({
+	openSendTwilioCmp : function(component, event, helper, Component Name) {
+        console.log('name--->'+name);
+        $A.createComponent(
+            "c:SendTwilioSMS_Cmp",{
+                "ContactId": component.getReference("v.ContactId")
+            },
+            function(newcomponent){
+                if (component.isValid()) {
+                    var body = component.get("v.twilioBody");
+                    body.push(newcomponent);
+                    component.set("v.twilioBody", body);             
+                }
+            }            
+        );
+	}
+})
